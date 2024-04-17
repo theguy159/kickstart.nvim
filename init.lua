@@ -540,6 +540,8 @@ require('lazy').setup({
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
           map('<leader>cl', '<Plug>(comment_toggle_linewise_current)', '[C]omment [L]ine')
+          vim.keymap.set('v', '<leader>cl', '<Plug>(comment_toggle_linewise_visual)', { buffer = event.buf, desc = 'LSP: [C]omment [L]ine' })
+          vim.keymap.set('v', '<leader>cb', '<Plug>(comment_toggle_blockwise_visual)', { buffer = event.buf, desc = 'LSP: [C]omment [B]lock' })
 
           -- Opens a popup that displays documentation about the word under your cursor
           --  See `:help K` for why this keymap.
