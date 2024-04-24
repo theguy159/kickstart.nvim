@@ -1,3 +1,7 @@
+-- Disable netrw since I use nvim-tree
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -81,8 +85,13 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagn
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- Delete buffer without closing window
-vim.keymap.set('n', '<leader>b', ':bp<bar>sp<bar>bn<bar>bd<CR>', { desc = 'Deletes current buffer without closing window' })
+-- toggle filetree
+vim.keymap.set('n', '<leader>t', ':NvimTreeToggle<cr>', { desc = '[T]oggle filetree' })
+
+-- Delete buffer without closing window, doesn't work very well :(
+-- vim.keymap.set('n', '<leader>b', ':bp<bar>sp<bar>bn<bar>bd<CR>', { desc = 'Deletes current buffer without closing window' })
+-- here's the same with BufDel
+vim.keymap.set('n', '<leader>b', ':BufDel<CR>', { desc = 'Deletes current buffer without closing window' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -142,6 +151,18 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  { 'ojroques/nvim-bufdel' },
+  {
+    'nvim-tree/nvim-tree.lua',
+    version = '*',
+    lazy = false,
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require('nvim-tree').setup {}
+    end,
+  },
   {
     'petertriho/nvim-scrollbar',
     opts = {},
