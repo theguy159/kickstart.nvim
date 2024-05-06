@@ -1,3 +1,6 @@
+-- Ensure termguicolors is enabled if not already
+vim.opt.termguicolors = true
+
 -- Disable netrw since I use nvim-tree
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -86,7 +89,7 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagn
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- toggle filetree
-vim.keymap.set('n', '<leader>t', ':NvimTreeToggle<cr>', { desc = '[T]oggle filetree' })
+vim.keymap.set('n', '<F2>', ':NvimTreeToggle<cr>', { desc = '[T]oggle filetree' })
 
 -- Delete buffer without closing window, doesn't work very well :(
 -- vim.keymap.set('n', '<leader>b', ':bp<bar>sp<bar>bn<bar>bd<CR>', { desc = 'Deletes current buffer without closing window' })
@@ -151,6 +154,29 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  {
+    'brenoprata10/nvim-highlight-colors',
+    lazy = false,
+    opts = {
+      enable_tailwind = true,
+      enable_named_colors = true,
+    },
+  },
+  {
+    'ggandor/leap.nvim',
+    config = function(_, opts)
+      local leap = require 'leap'
+      for k, v in pairs(opts) do
+        leap.opts[k] = v
+      end
+      leap.add_default_mappings(true)
+      vim.keymap.del({ 'x', 'o' }, 'x')
+      vim.keymap.del({ 'x', 'o' }, 'X')
+      vim.keymap.set('n', 's', function()
+        require('leap').leap { target_windows = { vim.api.nvim_get_current_win() } }
+      end)
+    end,
+  },
   { 'ojroques/nvim-bufdel' },
   {
     'nvim-tree/nvim-tree.lua',
@@ -750,13 +776,14 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
+    -- 'dracula/vim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+      -- vim.cmd.colorscheme 'dracula'
       vim.cmd.colorscheme 'tokyonight-night'
-
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
@@ -785,7 +812,46 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      require('mini.surround').setup {
+        -- Add custom surroundings to be used on top of builtin ones. For more
+        -- information with examples, see `:h MiniSurround.config`.
+        custom_surroundings = nil,
+
+        -- Duration (in ms) of highlight when calling `MiniSurround.highlight()`
+        highlight_duration = 500,
+
+        -- Module mappings. Use `''` (empty string) to disable one.
+        -- Changed mappings to begin with m so leap can start with s without a delay (hopefully)
+        mappings = {
+          add = 'ma', -- Add surrounding in Normal and Visual modes
+          delete = 'md', -- Delete surrounding
+          find = 'mf', -- Find surrounding (to the right)
+          find_left = 'mF', -- Find surrounding (to the left)
+          highlight = 'mh', -- Highlight surrounding
+          replace = 'mr', -- Replace surrounding
+          update_n_lines = 'mn', -- Update `n_lines`
+
+          suffix_last = 'l', -- Suffix to search with "prev" method
+          suffix_next = 'n', -- Suffix to search with "next" method
+        },
+
+        -- Number of lines within which surrounding is searched
+        n_lines = 20,
+
+        -- Whether to respect selection type:
+        -- - Place surroundings on separate lines in linewise mode.
+        -- - Place surroundings on each line in blockwise mode.
+        respect_selection_type = false,
+
+        -- How to search for surrounding (first inside current line, then inside
+        -- neighborhood). One of 'cover', 'cover_or_next', 'cover_or_prev',
+        -- 'cover_or_nearest', 'next', 'prev', 'nearest'. For more details,
+        -- see `:h MiniSurround.config`.
+        search_method = 'cover',
+
+        -- Whether to disable showing non-error feedback
+        silent = false,
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
