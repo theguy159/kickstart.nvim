@@ -16,6 +16,10 @@ return {
       { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
+      vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+        -- Disable underline, it's very annoying
+        underline = false,
+      })
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
