@@ -9,11 +9,12 @@ return {
   --   end,
   -- },
   {
-    'EdenEast/nightfox.nvim',
+    -- 'EdenEast/nightfox.nvim',
+    'zootedb0t/citruszest.nvim',
     lazy = false,
     priority = 1000,
     init = function()
-      vim.cmd.colorscheme 'carbonfox'
+      vim.cmd.colorscheme 'citruszest'
     end,
   },
 }
